@@ -161,7 +161,7 @@ public abstract class Page extends JPanel{
 		mainPanel.setBackground(Color.cyan);
 		return mainPanel;
 	}
-	
+	//as
 public void walletsPanels1() {
 		for (Wallet wallet : wallets) {
 			JPanel mainPanel = new JPanel();
@@ -196,7 +196,7 @@ public void walletsPanels1() {
 	
 	public void showAndHideWalletBody(JPanel body) {
 		body.setVisible(!body.isVisible());
-
+		//aaaaaaaaaaaaaaaa
 	}
 	
 	
