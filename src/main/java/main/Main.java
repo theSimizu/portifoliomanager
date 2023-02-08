@@ -13,6 +13,7 @@ public class Main{
 		Screen screen = new Screen();
 		JFrame frame = generateFrame();
 		
+		
 		frame.add(screen);
 	}
 	

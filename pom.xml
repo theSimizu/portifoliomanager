@@ -4,8 +4,16 @@
   <artifactId>maven.portfoliomanager</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>portfoliomanager</name>
-  
-  <dependencies>
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.target>19</maven.compiler.target>
+    </properties>
+
+
+
+
+    <dependencies>
   	<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
 	<dependency>
 	    <groupId>org.xerial</groupId>

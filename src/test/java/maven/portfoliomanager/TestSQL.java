@@ -11,13 +11,17 @@ public class TestSQL {
 
 	public static void main(String[] args) {
 		DataBase db = new DataBase();
+//		DataBase db = DataBase.db;
 		db.createTables();
-		Wallet wallet = Wallet.getWallet(4);
-		wallet.printTransactions();
+		Wallet wallet = Wallet.getWallet(1);
+		wallet.printCoins();
+//		wallet.printTransactions();
 //		db.createWallet("MetaMask");
 //		db.getAllWallets();
-//		db.createTransaction("BinanceCoin", "bnb", 1, "USD", 2, 2000, LocalDateTime.now(), 4);
+//		db.createTransaction("Cardano", "ada", 1, "USD", 1, 1, LocalDateTime.now(), 1);
 //		db.getTransactions(1);
+		
+//		System.out.println(db.getTransactions(1));
 	}
 
 }

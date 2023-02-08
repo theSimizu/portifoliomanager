@@ -196,7 +196,7 @@ public void walletsPanels1() {
 	
 	public void showAndHideWalletBody(JPanel body) {
 		body.setVisible(!body.isVisible());
-		//aaaaaaaaaaaaaaaa
+		
 	}
 	
 	

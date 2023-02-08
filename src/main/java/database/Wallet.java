@@ -2,15 +2,19 @@ package database;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Wallet {
 	private int id;
 	private String name;
 	
 	private ArrayList<Transaction> transactions;// = new ArrayList<Transactions>();
-	private static DataBase db = DataBase.db;
+	private ArrayList<Coin> coins;
+//	private static DataBase db = DataBase.db;
+	private static DataBase db = new DataBase();
 	private static Wallet currentWallet;
 	private static ArrayList<Wallet> wallets = db.getAllWallets();
+	
 	
 	@Override
 	public String toString() {
@@ -21,6 +25,7 @@ public class Wallet {
 		this.id = id;
 		this.name = db.getWalletName(id);
 		this.loadTransactions();
+		this.setCoins();
 	}
 	
 	private Wallet(String name) {
@@ -35,6 +40,18 @@ public class Wallet {
 		for (Transaction transaction : this.transactions) {
 			System.out.println(transaction);
 		}
+	}
+	
+	public void printCoins() {
+		
+		for (Coin coin : this.coins) {
+			System.out.println(coin.getName());
+		}
+	}
+	
+	private void setCoins() {
+		this.coins = Coin.getCoins(this.transactions);
+		Collections.sort(this.coins);
 	}
 	
 	public void createTransaction(String name, String symbol, int type, String pair, 
