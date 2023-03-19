@@ -6,8 +6,9 @@ import javax.swing.JFrame;
 
 public class Main{
 	
-	private static int scale=2;
-	private static int width=420*scale, height=420*scale;
+	private static final int scale=2;
+	private static final int width=420*scale;
+	private static final int height=420*scale;
 
 	public static void main(String[] args) {
 		Screen screen = new Screen();

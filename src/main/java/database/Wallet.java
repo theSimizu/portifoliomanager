@@ -5,70 +5,55 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Wallet {
-	private int id;
-	private String name;
-	
-	private ArrayList<Transaction> transactions;// = new ArrayList<Transactions>();
-	private ArrayList<Coin> coins;
-//	private static DataBase db = DataBase.db;
-	private static DataBase db = new DataBase();
-	private static Wallet currentWallet;
-	private static ArrayList<Wallet> wallets = db.getAllWallets();
-	
-	
-	@Override
-	public String toString() {
-		return "| " + this.id + " | " + this.name + " |";
-	}
-	
+	private final int id;
+	private final String name;
+	private ArrayList<Transaction> transactions;
+	private ArrayList<CryptoAsset> assets;
+	private static final DataBase db = DataBase.db;
+//	private static DataBase db = new DataBase();
+	private static final ArrayList<Wallet> wallets = new ArrayList<>();
+
 	private Wallet(int id) {
 		this.id = id;
 		this.name = db.getWalletName(id);
 		this.loadTransactions();
-		this.setCoins();
+		this.setCryptos();
 	}
-	
-	private Wallet(String name) {
-		db.createWallet(name);
-	}
-	
+
 	private void loadTransactions() {
 		this.transactions = db.getTransactions(this.id);
 	}
-	
-	public void printTransactions() {
-		for (Transaction transaction : this.transactions) {
-			System.out.println(transaction);
-		}
+
+	private void setCryptos() {
+		this.assets = CryptoAsset.getCryptos(this.transactions);
+		Collections.sort(this.assets);
 	}
-	
-	public void printCoins() {
-		
-		for (Coin coin : this.coins) {
-			System.out.println(coin.getName());
-		}
+
+	public void createTransaction(CryptoAsset coin, Asset pair, boolean buy, LocalDateTime datetime){
+		Transaction.createTransaction(coin, pair, buy, datetime, this.id);
 	}
-	
-	private void setCoins() {
-		this.coins = Coin.getCoins(this.transactions);
-		Collections.sort(this.coins);
+
+	public String getName() {
+		return this.name;
 	}
-	
-	public void createTransaction(String name, String symbol, int type, String pair, 
-			  					  double amount, double value, LocalDateTime datetime) {
-		
-		db.createTransaction(name, symbol, type, pair, amount, value, datetime, this.id);
+
+	public ArrayList<CryptoAsset> getCoins() {
+		return this.assets;
 	}
-	
-	public static Wallet getWallet(int id) {
-		return new Wallet(id);
+
+	public static void createWallet(String name) {
+		db.createWallet(name);
 	}
-	
-	public static Wallet createWallet(String name) {
-		return new Wallet(name);
+
+	private static void setWallets() {
+		for (int id : db.getAllWalletsIDs()) wallets.add(new Wallet(id));
 	}
-	
+
 	public static ArrayList<Wallet> getWallets() {
+		wallets.clear();
+		setWallets();
 		return wallets;
 	}
+
+
 }

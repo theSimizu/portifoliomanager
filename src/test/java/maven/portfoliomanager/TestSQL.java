@@ -1,20 +1,29 @@
 package maven.portfoliomanager;
 
-import java.sql.Date;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.function.UnaryOperator;
 
 import database.DataBase;
 import database.Wallet;
 
 public class TestSQL {
 
+
 	public static void main(String[] args) {
-		DataBase db = new DataBase();
+
+//		DataBase.start();
+//		DataBase db = new DataBase();
+//		ArrayList<Wallet> wallets = new ArrayList<>();
+//		Wallet.setWallets();
+//		ArrayList<Wallet> wallets = Wallet.getWallets();
+//		DataBase.getAllWallets(wallets);
+//		db.getAllWalletsIDs(wallets);
+//		System.out.println(wallets);
+//		System.out.println(Wallet.getWallets());
 //		DataBase db = DataBase.db;
-		db.createTables();
-		Wallet wallet = Wallet.getWallet(1);
-		wallet.printCoins();
+//		db.createTables();
+//		Wallet wallet = Wallet.getWallet(1);
+//		wallet.printCoins();
 //		wallet.printTransactions();
 //		db.createWallet("MetaMask");
 //		db.getAllWallets();
@@ -22,6 +31,7 @@ public class TestSQL {
 //		db.getTransactions(1);
 		
 //		System.out.println(db.getTransactions(1));
+//		db.getAllWallets();
 	}
 
 }

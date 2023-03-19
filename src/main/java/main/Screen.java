@@ -16,9 +16,7 @@ import pages.PageCrypto;
 public class Screen extends JPanel implements MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = 1L;
-//	private boolean moving = false;
-//	private boolean onBorder = false;
-	public LeftPanel left;
+	public LeftPanel leftPanel;
 	public Page pageCrypto;
 
 
@@ -32,22 +30,23 @@ public class Screen extends JPanel implements MouseListener, MouseMotionListener
 //		buttons();
 	}
 	
-	public void fullfil() {
-		left = new LeftPanel();
+	private void fullfil() {
+		leftPanel = new LeftPanel();
 		pageCrypto = new PageCrypto();
-		this.add(left, BorderLayout.WEST);
+		pageCrypto.pageAdjusts();
+		this.add(leftPanel, BorderLayout.WEST);
 		this.add(pageCrypto, BorderLayout.CENTER);
 	}
 	
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		left.resizePanel(e);	
+		leftPanel.resizePanel(e);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		left.mouseOnBorder(e);
+		leftPanel.mouseOnBorder(e);
 		
 	}
 
@@ -71,10 +70,9 @@ public class Screen extends JPanel implements MouseListener, MouseMotionListener
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		left.setMoving(true);
+		leftPanel.setMoving(true);
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		left.setMoving(false);	}
+	public void mouseReleased(MouseEvent e) { leftPanel.setMoving(false); }
 }

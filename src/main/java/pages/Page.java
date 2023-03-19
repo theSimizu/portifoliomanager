@@ -1,42 +1,35 @@
 package pages;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 
+import database.Asset;
 import database.Wallet;
 
-public abstract class Page extends JPanel{
+public abstract class Page extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
-	private JScrollPane portifoliosPanel;
-	private JPanel totalMoneyPanel;
+	private final JPanel portifoliosPanel = new JPanel();
+	private final JScrollPane portifoliosPanelScrollPane;
 	private Component rigidArea;
-	private ArrayList<JPanel> walletPanels = new ArrayList<JPanel>();
-	private ArrayList<Wallet> wallets = Wallet.getWallets();
+
 
 	public Page() {
 		setLayout(new BorderLayout());
-		totalMoneyPanel = genTotalMoneyPanel();
-		portifoliosPanel = genPortifoliosPanel();
+		portifoliosPanelSettings();
+		updatePortifolioPanel();
+		JPanel totalMoneyPanel = genTotalMoneyPanel();
+		portifoliosPanelScrollPane = genPortifoliosPanelScrollPane();
 		add(totalMoneyPanel, BorderLayout.NORTH);
-		add(portifoliosPanel, BorderLayout.CENTER);
+		add(portifoliosPanelScrollPane, BorderLayout.CENTER);
+	}
+
+	public void update() {
+		updatePortifolioPanel();
+		portifoliosPanel.revalidate();
+		portifoliosPanel.repaint();
 	}
 	
 	public JPanel genTotalMoneyPanel() {
@@ -45,179 +38,160 @@ public abstract class Page extends JPanel{
 		panel.setBackground(new Color(0xf01e23));
 		panel.setPreferredSize(new Dimension(0, 60));
 		panel.add(label);
-		
-		
-		
 		return panel;
 	}
-	
-	public JScrollPane genPortifoliosPanel() {
-		JPanel panel = new JPanel();
-		JScrollPane scroll = new JScrollPane(panel);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.setBackground(Color.DARK_GRAY);
-		
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-//		walletPanels.add(walletsPanels());
-//		walletPanels.add(walletsPanels());
-//		walletPanels.add(walletsPanels());
-//		walletPanels.add(walletsPanels());
-//		walletPanels.add(walletsPanels());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		walletPanels.add(createWalletPanel());
-		
-		for (JPanel panel2 : walletPanels) {
-			panel.add(panel2);
-		}
-		
 
-//		rigidArea = Box.createRigidArea(new Dimension(0, 900));
+	private void portifoliosPanelSettings() {
+		portifoliosPanel.setLayout(new BoxLayout(portifoliosPanel, BoxLayout.Y_AXIS));
+		portifoliosPanel.setBackground(Color.DARK_GRAY);
 		rigidArea = new JPanel();
 		rigidArea.setPreferredSize(new Dimension(0, 900));
 		rigidArea.setBackground(null);
-		
-		panel.add(rigidArea);
-		
+	}
+
+	private void updatePortifolioPanel() {
+		ArrayList<Wallet> wallets = Wallet.getWallets();
+		portifoliosPanel.removeAll();
+		for (Wallet wallet : wallets) portifoliosPanel.add(getWalletBoxPanel(wallet));
+		portifoliosPanel.add(newWalletButton());
+		portifoliosPanel.add(rigidArea);
+	}
+
+	private JScrollPane genPortifoliosPanelScrollPane() {
+		JScrollPane scroll = new JScrollPane(portifoliosPanel);
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
 		scroll.getVerticalScrollBar().isVisible();
-
-
-		
 		return scroll;
 	}
 
+	private JPanel newWalletButton() {
+		JPanel newWalletPanel = new JPanel();
+		JLabel plusLabel = new JLabel("+");
+		JButton newWalletAction = new JButton();
 
-	
-	
-	public JPanel createWalletPanel() {
-		
-		JPanel mainPanel = new JPanel();
-		JPanel header = new JPanel();
+		plusLabel.setFont(new Font("Arial", Font.BOLD, 20));
+		newWalletAction.setLayout(new GridBagLayout());
+		newWalletAction.add(plusLabel);
+		newWalletAction.addActionListener(e -> new PageNewWallet(this));
+
+		newWalletPanel.setLayout(new BorderLayout());
+		newWalletPanel.add(newWalletAction, BorderLayout.CENTER);
+		newWalletPanel.setPreferredSize(new Dimension(0, 40));
+		return newWalletPanel;
+	}
+
+	private JPanel getCoinBoxPanel(Asset asset) {
+		asset.convertTo("EUR");
+		JPanel coinBoxPanel = new JPanel();
+		JPanel coinImgPanel = new JPanel();
+		JPanel coinInfoPanel = new JPanel();
+
+		JLabel coinNameLabel = new JLabel(asset.getName()); coinNameLabel.setForeground(Color.white);
+		JLabel coinAmountLabel = new JLabel(Double.toString(asset.getAmount())); coinAmountLabel.setForeground(Color.white);
+		JLabel coinProfitLabel = new JLabel("Placeholder"); coinProfitLabel.setForeground(Color.white);
+		JLabel coinTotalLabel = new JLabel(asset.getPair().getCurrencySymbol() + asset.getTotalString()); coinTotalLabel.setForeground(Color.white);
+
+		coinImgPanel.setBackground(null);
+		coinImgPanel.setPreferredSize(new Dimension(100, 0));
+
+		coinInfoPanel.setLayout(new GridLayout(2, 2));
+		coinInfoPanel.add(coinNameLabel);
+		coinInfoPanel.add(coinProfitLabel);
+		coinInfoPanel.add(coinAmountLabel);
+		coinInfoPanel.add(coinTotalLabel);
+		coinInfoPanel.setBackground(null);
+
+		coinBoxPanel.setLayout(new BorderLayout());
+		coinBoxPanel.add(coinImgPanel, BorderLayout.WEST);
+		coinBoxPanel.add(coinInfoPanel, BorderLayout.CENTER);
+		coinBoxPanel.setPreferredSize(new Dimension(0, 70));
+		coinBoxPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, new Color(0X6a6a6a)));
+		coinBoxPanel.setBackground(new Color(0X4a4a4a));
+		return coinBoxPanel;
+	}
+
+	private JPanel getWalletBoxPanelHeader(Wallet wallet, JPanel coinsBoxListPanel) {
+		JPanel headerPanel = new JPanel();
 		JButton headerAction = new JButton();
-		JPanel coinBody = new JPanel();
-		JPanel allCoinsBody = new JPanel();
-		allCoinsBody.setLayout(new BoxLayout(allCoinsBody, BoxLayout.PAGE_AXIS));;
-		
-		header.setLayout(new GridLayout());
-		header.setBackground(Color.gray);
-		header.setPreferredSize(new Dimension(0, 30));
-		header.add(headerAction);
-		
-		
+
+		headerPanel.setLayout(new BorderLayout());
+		headerPanel.setBackground(Color.gray);
+		headerPanel.setPreferredSize(new Dimension(0, 30));
+		headerPanel.add(headerAction, BorderLayout.CENTER);
+
 		headerAction.setLayout(new GridBagLayout());
 		headerAction.setBackground(null);
-		headerAction.add(new JLabel("Electrum"));
-		headerAction.addActionListener(e -> showAndHideWalletBody(coinBody));
-		headerAction.addActionListener(e -> correctHeight());
-		
-		
-		JLabel coinNameLabel = new JLabel("Bitcoin");
-		JLabel coinAmountLabel = new JLabel("0000");
-		JLabel coinProfitLabel = new JLabel("1111");
-		JLabel coinTotalLabel = new JLabel("2222");
-		
-		
-		JPanel coinImg = new JPanel();
-		JPanel coinInfo = new JPanel();
-		
-		coinImg.setBackground(new Color(0x000000));
-		coinImg.setPreferredSize(new Dimension(100, 0));
-		coinInfo.setLayout(new GridLayout(2, 2));
-		
-		coinInfo.add(coinNameLabel);
-		coinInfo.add(coinProfitLabel);
-		coinInfo.add(coinAmountLabel);
-		coinInfo.add(coinTotalLabel);
+		headerAction.add(new JLabel(wallet.getName()));
+		headerAction.addActionListener(e -> {
+			showAndHideWalletBody(coinsBoxListPanel);
+			correctHeight();
+		});
 
-		coinBody.setLayout(new BorderLayout());
-		coinBody.add(coinImg, BorderLayout.WEST);
-		coinBody.add(coinInfo, BorderLayout.CENTER);
-		coinBody.setBackground(Color.orange);
-		coinBody.setPreferredSize(new Dimension(0, 70));
-		coinBody.setVisible(false);
-
-
-		allCoinsBody.add(coinBody);
-		
-		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(header, BorderLayout.NORTH);
-		mainPanel.add(allCoinsBody, BorderLayout.CENTER);
-		mainPanel.setBackground(Color.cyan);
-		return mainPanel;
+		return headerPanel;
 	}
-	//as
-public void walletsPanels1() {
-		for (Wallet wallet : wallets) {
-			JPanel mainPanel = new JPanel();
-			JPanel header = new JPanel();
-			JPanel body = new JPanel();
-			JButton headerAction = new JButton();
-			
-			header.setLayout(new GridLayout());
-			header.setBackground(Color.gray);
-			header.setPreferredSize(new Dimension(0, 30));
-			header.add(headerAction);
-			
-			
-			headerAction.setLayout(new GridBagLayout());
-			headerAction.setBackground(null);
-			headerAction.add(new JLabel("Electrum"));
-			headerAction.addActionListener(e -> showAndHideWalletBody(body));
-			headerAction.addActionListener(e -> correctHeight());
-			
-			body.add(new JLabel("00000"));
-			body.setBackground(Color.orange);
-			body.setPreferredSize(new Dimension(0, 70));
-			body.setVisible(false);
-			
-			mainPanel.setLayout(new BorderLayout());
 
-			mainPanel.add(header, BorderLayout.NORTH);
-			mainPanel.add(body, BorderLayout.CENTER);
-			mainPanel.setBackground(Color.cyan);
-		}
+	private JPanel getWalletBoxPanel(Wallet wallet) {
+		JPanel walletBoxPanel = new JPanel();
+
+		JPanel coinsBoxListPanel = walletCoinsListPanel(wallet, walletBoxPanel);
+		JPanel headerPanel = getWalletBoxPanelHeader(wallet, coinsBoxListPanel);
+
+		coinsBoxListPanel.setVisible(false);
+		walletBoxPanel.setLayout(new BorderLayout());
+		walletBoxPanel.add(headerPanel, BorderLayout.NORTH);
+		walletBoxPanel.add(coinsBoxListPanel, BorderLayout.CENTER);
+
+		return walletBoxPanel;
 	}
+
+
+	private JPanel walletCoinsListPanel(Wallet wallet, JPanel test) {
+		JPanel coinsBoxListPanel = new JPanel();
+		coinsBoxListPanel.setLayout(new BoxLayout(coinsBoxListPanel, BoxLayout.PAGE_AXIS));
+		coinsBoxListPanel.add(newTransactionButton(wallet, test));
+		for (Asset asset : wallet.getCoins()) coinsBoxListPanel.add(getCoinBoxPanel(asset));
+		return coinsBoxListPanel;
+
+	}
+
+
+
+	private JPanel newTransactionButton(Wallet wallet, JPanel test) {
+		JPanel panel = new JPanel();
+		JButton button = new JButton("New Transaction");
+		button.addActionListener(e -> new PageNewTransaction(wallet, test));
+
+		panel.setLayout(new BorderLayout());
+		panel.setPreferredSize(new Dimension(0, 35));
+		panel.setBackground(new Color(0x999999));
+		panel.add(button);
+
+		button.setBackground(null);
+
+		return panel;
+	}
+
+
 	
 	public void showAndHideWalletBody(JPanel body) {
 		body.setVisible(!body.isVisible());
-		
 	}
-	
-	
-	
-	
-	
+
 	public void correctHeight() {
 		int totalHeight = 0;
-		for (JPanel panel : walletPanels) {
+		for (Component panel : portifoliosPanelScrollPane.getComponents()) {
+			if (!(panel instanceof JPanel)) break;
 			totalHeight+=panel.getHeight();
 		}
-		
-		int diff = portifoliosPanel.getHeight() - totalHeight;
-
+		int diff = portifoliosPanelScrollPane.getHeight() - totalHeight;
 		if (totalHeight > 0 && diff > 0) {
-			rigidArea.setPreferredSize(new Dimension(0, diff+50)); 
+			rigidArea.setPreferredSize(new Dimension(0, diff));
 			rigidArea.revalidate();
 		}
+	}
+
+	public void pageAdjusts() {
 
 	}
-	
-
 
 }
