@@ -13,34 +13,33 @@ import javax.swing.JPanel;
 public class LeftPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public boolean moving;
-	public boolean onBorder;
+	private boolean moving;
+	private boolean onBorder;
+	private final JPanel totalMoneyPanel = new JPanel(new GridBagLayout());
+
 	
 	
 	public LeftPanel() {
+//		this.setMinimumSize(new Dimension(100, 0));
+		this.setTotalMoneyPanel();
 		this.setPreferredSize(new Dimension(200, 0));
 		this.setLayout(new GridLayout(10, 1));
-		this.add(genTotalMoneyPanel());
-		this.add(typeOfPortifolio("Crypto"));
-		this.add(typeOfPortifolio("Stocks"));
-		this.add(typeOfPortifolio("Bank"));
+		this.add(totalMoneyPanel);
+		this.add(typeOfPortfolio("Crypto"));
+		this.add(typeOfPortfolio("Stocks"));
+		this.add(typeOfPortfolio("Bank"));
 
 
 	}
 	
-	public JPanel genTotalMoneyPanel() {
-		JLabel label = new JLabel("R$0000,00");
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.setBackground(new Color(0x22ee23));
-		panel.add(label);
+	public void setTotalMoneyPanel() {
+		totalMoneyPanel.setBackground(new Color(0x22ee23));
+		totalMoneyPanel.add(new JLabel("R$0000,00"));
 		
-		return panel;
 	}
 	
-	public JButton typeOfPortifolio(String name) {
-		JButton button = new JButton(name);
-		return button;
+	public JButton typeOfPortfolio(String name) {
+		return new JButton(name);
 	}
 	
 	public void resizePanel(MouseEvent e) {
@@ -52,6 +51,7 @@ public class LeftPanel extends JPanel {
 	}
 	
 	public void mouseOnBorder(MouseEvent e) {
+		System.out.println(e.getX());
 		if (e.getX() < getPreferredSize().width && e.getX() > getPreferredSize().width - 15) {
 			onBorder = true;
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));

@@ -107,29 +107,6 @@ public class DataBase {
 		}
 	}
 
-	
-//	public void createTransaction(String name, String coingeckoID, String symbol, int type, String pair,
-//								  double amount, double value, LocalDateTime datetime, int walletID){
-//		DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//		String dt = datetime.format(myFormatObj);
-//		String createTransaction =
-//				"INSERT INTO Transactions(name, coingeckoID, symbol, type, pair, amount, value, datetime, walletID) VALUES("
-//				+ "'" + name + "',"
-//				+ "'" + coingeckoID + "',"
-//				+ "'" + symbol +"',"
-//				+ "" + type + ","
-//				+ "'" + pair + "',"
-//				+ "" + amount + ","
-//				+ "" + value + ","
-//				+ "'" + dt + "',"
-//				+ "" + walletID + ""
-//				+ ")";
-//		try {
-//			executeUpdate(createTransaction);
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	public ArrayList<Transaction> getTransactions(int walletID) {
 		ArrayList<Transaction> transactions = new ArrayList<>();
@@ -147,19 +124,6 @@ public class DataBase {
 		return transactions;
 	}
 
-	public int getWalletId(String name) {
-		int id = 0;
-		name = name.replace(" ", "_");
-		String getWalletId = "SELECT id FROM CryptoWallets WHERE name = " + name;
-		try {
-			ResultSet rs = execute(getWalletId);
-			id = Integer.parseInt(rs.getString("id"));
-			rs.getStatement().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return id;
-	}
 	
 	public String getWalletName(int id) {
 		String name;
@@ -167,7 +131,6 @@ public class DataBase {
 			ResultSet rs = execute("SELECT name FROM CryptoWallets WHERE id = " + id);
 			name = rs.getString("name");
 			rs.getStatement().close();
-//			rs.getStatement().getConnection().close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			name = "";

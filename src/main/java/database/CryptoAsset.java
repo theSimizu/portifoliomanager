@@ -19,28 +19,21 @@ public class CryptoAsset extends Asset {
         super(name, symbol, value);
     }
 
-//    public void setPair(FiatAsset asset){
-//        this.pair = asset;
-//    }
 
     public static ArrayList<CryptoAsset> getCryptos(ArrayList<Transaction> transactions) {
         ArrayList<CryptoAsset> assets = new ArrayList<>();
+        CryptoAsset lastAsset = null;
         Collections.sort(transactions);
 
         for (Transaction transaction : transactions) {
-            String coinName = transaction.getCoinName();
-            String coinSymbol = transaction.getCoinSymbol();
-            String pair = transaction.getPair();
-            double amount = transaction.getAmount();
-            double value = transaction.getValue();
+            CryptoAsset currentAsset = (CryptoAsset) transaction.getCoin();
 
-
-            CryptoAsset asset = new CryptoAsset(coinName, coinSymbol, pair, amount, value);
-
-            if (assets.size() == 0 || !coinName.equalsIgnoreCase(assets.get(assets.size() - 1).getName()))
-                assets.add(asset);
-            else
-                assets.get(assets.size() - 1).sumCoin(asset);
+            if (lastAsset == null || !currentAsset.isEqual(lastAsset)) {
+                lastAsset = currentAsset;
+                assets.add(lastAsset);
+            } else {
+                lastAsset.sumCoin(currentAsset, transaction.getBuy());
+            }
 
         }
 

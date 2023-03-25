@@ -25,11 +25,11 @@ public class PageNewTransaction extends JFrame {
     private JComboBox<Asset> pairComboBox;
     private Asset selectedCoin;
     private String currencySymbol;
-    private JPanel test;
+    private final WalletBoxPanel walletBoxPanel;
 
-    public PageNewTransaction(Wallet wallet, JPanel test) {
-        this.test = test;
-        this.wallet = wallet;
+    public PageNewTransaction(WalletBoxPanel walletBoxPanel) {
+        this.walletBoxPanel = walletBoxPanel;
+        this.wallet = walletBoxPanel.getWallet();
         setBounds(new Rectangle(width, height));
         setResizable(false);
         setLocationRelativeTo(null);
@@ -135,23 +135,20 @@ public class PageNewTransaction extends JFrame {
     private JButton saveButton(JLabel warningMessage) {
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(e -> {
+            warningMessage.setVisible(true);
             if (!buttonPressed) {
-                warningMessage.setVisible(true);
                 warningMessage.setText("SELECT BUY OR SELL");
             } else if (selectCoinButton.getText().equals("SELECT COIN")) {
-                warningMessage.setVisible(true);
                 warningMessage.setText("SELECT A COIN");
             } else if (amountInput.getText().equals("")) {
-                warningMessage.setVisible(true);
                 warningMessage.setText("INSERT THE AMOUNT");
             } else if (valueInput.getText().equals("")) {
-                warningMessage.setVisible(true);
                 warningMessage.setText("INSERT THE VALUE");
             } else {
                 selectedCoin.setValue(Double.parseDouble(valueInput.getText()));
                 selectedCoin.setAmount(Double.parseDouble(amountInput.getText()));
                 wallet.createTransaction((CryptoAsset) selectedCoin, selectedCoin.getPair(), buy, LocalDateTime.now());
-//                test
+                walletBoxPanel.updateBody();
                 this.dispose();
             }
         });

@@ -32,6 +32,11 @@ public class Transaction implements Comparable<Transaction> {
 		return pair;
 	}
 
+	public boolean getBuy() {
+		return buy;
+	}
+
+
 //	public Transaction(String coinName, String coinSymbol, int type, String pair,
 //					   double amount, double value, LocalDateTime datetime, int walletID) {
 //
@@ -39,7 +44,10 @@ public class Transaction implements Comparable<Transaction> {
 //
 //
 //	}
-	
+
+	public Asset getCoin() {
+		return new CryptoAsset(coinName, coinSymbol, pair, amount, value);
+	}
 
 	
 	public Transaction(int id) {

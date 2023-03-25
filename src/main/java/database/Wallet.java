@@ -16,7 +16,6 @@ public class Wallet {
 	private Wallet(int id) {
 		this.id = id;
 		this.name = db.getWalletName(id);
-		this.loadTransactions();
 		this.setCryptos();
 	}
 
@@ -25,6 +24,7 @@ public class Wallet {
 	}
 
 	private void setCryptos() {
+		this.loadTransactions();
 		this.assets = CryptoAsset.getCryptos(this.transactions);
 		Collections.sort(this.assets);
 	}
@@ -38,6 +38,7 @@ public class Wallet {
 	}
 
 	public ArrayList<CryptoAsset> getCoins() {
+		setCryptos();
 		return this.assets;
 	}
 

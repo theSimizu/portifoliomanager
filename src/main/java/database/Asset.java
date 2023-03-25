@@ -8,7 +8,6 @@ public abstract class Asset implements Comparable<Asset> {
 	protected String name, id, pairSymbol, symbol, currencySymbol;
 	protected FiatAsset pair;
 
-//	protected Asset pair;
 	protected double amount, value, total, quotationValue;
 
 
@@ -28,15 +27,6 @@ public abstract class Asset implements Comparable<Asset> {
 		this.quotationValue = this.value * this.pair.getQuotation();
 
 	}
-
-
-
-//	public Asset(String coinGeckoID, String name, String symbol, double value) {
-//		this.name = name;
-//		this.id = coinGeckoID;
-//		this.symbol = symbol;
-//		this.value = value;
-//	}
 
 	public Asset(String name, String symbol, double value) {
 		this.name = name;
@@ -127,12 +117,18 @@ public abstract class Asset implements Comparable<Asset> {
 		return id;
 	}
 
-	public void sumCoin(Asset asset) {
-		this.amount += asset.amount;
-		this.total += asset.total;
+	public void sumCoin(Asset asset, boolean buy) {
+		this.amount += (buy) ? asset.amount : - asset.amount;
+		this.total += (buy) ? asset.total : - asset.total;
+
+//		this.amount += asset.amount;
+//		this.total += asset.total;
 	}
 
 
+	public boolean isEqual(Asset asset) {
+		return this.name.equalsIgnoreCase(asset.getName());
+	}
 
 
 	@Override
