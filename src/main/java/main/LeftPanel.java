@@ -1,14 +1,16 @@
 package main;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import assets.Asset;
+import assets.FiatAsset;
+import main.Screen;
+import pages.Page;
+
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Objects;
+import javax.swing.*;
 
 public class LeftPanel extends JPanel {
 
@@ -16,26 +18,71 @@ public class LeftPanel extends JPanel {
 	private boolean moving;
 	private boolean onBorder;
 	private final JPanel totalMoneyPanel = new JPanel(new GridBagLayout());
-
+	private final ArrayList<FiatAsset> fiatAssets = FiatAsset.getFiatList();
 	
 	
 	public LeftPanel() {
-//		this.setMinimumSize(new Dimension(100, 0));
+		JPanel kkk = new JPanel(new GridLayout(5, 1));
 		this.setTotalMoneyPanel();
-		this.setPreferredSize(new Dimension(200, 0));
-		this.setLayout(new GridLayout(10, 1));
-		this.add(totalMoneyPanel);
-		this.add(typeOfPortfolio("Crypto"));
-		this.add(typeOfPortfolio("Stocks"));
-		this.add(typeOfPortfolio("Bank"));
+		this.setPreferredSize(new Dimension(150, 0));
+		this.setLayout(new GridLayout(2, 1));
+		this.add(kkk);
+		this.add(selectCurrency());
+		kkk.add(totalMoneyPanel);
+		kkk.add(typeOfPortfolio("Crypto"));
+		kkk.add(typeOfPortfolio("Stocks"));
+		kkk.add(typeOfPortfolio("Bank"));
 
 
 	}
-	
+
+	private JComboBox<Asset> pairComboBox(ArrayList<? extends Asset> assets) {
+		JComboBox<Asset> comboBox = new JComboBox<>(assets.toArray(new Asset[0]));
+//		Page.fiat = Objects.requireNonNull(comboBox.getSelectedItem()).toString();
+		comboBox.addActionListener(e -> {
+			Page.fiat = comboBox.getSelectedItem().toString();
+//			Screen.pageCrypto.update();
+			Screen.pages[0].update();
+			setTotalMoneyPanel();
+		});
+
+		for (Asset asset : assets) {
+			if (asset.getSymbol().equals(Page.fiat)) {
+				comboBox.setSelectedItem(asset);
+				break;
+			}
+		}
+
+		return comboBox;
+	}
+
+	private JPanel selectCurrency() {
+		JPanel panel = new JPanel(new BorderLayout());
+
+		JComboBox<Asset> comboBox = pairComboBox(fiatAssets);
+
+		panel.add(comboBox, BorderLayout.SOUTH);
+
+
+		return panel;
+	}
+
 	public void setTotalMoneyPanel() {
+		double total = 0;
+		total += Screen.pages[0].total;
+		String symbol = new FiatAsset(Page.fiat).getCurrencySymbol();
+//		for (int i = 0; i < Screen.pages.length; i++) {
+//			total += Screen.pages[i].total;
+//		}
+//		for (Page page : Screen.pages) {
+//			total += page.total;
+//		}
+		DecimalFormat val = new DecimalFormat("#.00");
+		totalMoneyPanel.removeAll();
 		totalMoneyPanel.setBackground(new Color(0x22ee23));
-		totalMoneyPanel.add(new JLabel("R$0000,00"));
-		
+		totalMoneyPanel.add(new JLabel(symbol + val.format(total)));
+		totalMoneyPanel.revalidate();
+		totalMoneyPanel.repaint();
 	}
 	
 	public JButton typeOfPortfolio(String name) {
@@ -51,7 +98,6 @@ public class LeftPanel extends JPanel {
 	}
 	
 	public void mouseOnBorder(MouseEvent e) {
-		System.out.println(e.getX());
 		if (e.getX() < getPreferredSize().width && e.getX() > getPreferredSize().width - 15) {
 			onBorder = true;
 			setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));

@@ -1,8 +1,10 @@
-package database;
+package assets.crypto;
+
+import assets.Asset;
+import database.DataBase;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Transaction implements Comparable<Transaction> {
@@ -10,7 +12,7 @@ public class Transaction implements Comparable<Transaction> {
 	private int id, walletID;
 	private boolean buy;
 	private double amount, value;
-	private String coinName, coinSymbol, pair;
+	private String coinName, coinSymbol, pair, coingeckoID;
 	private LocalDateTime dateTime;
 //	private static DataBase db = new DataBase();
 	private static DataBase db = DataBase.db;
@@ -37,6 +39,7 @@ public class Transaction implements Comparable<Transaction> {
 	}
 
 
+
 //	public Transaction(String coinName, String coinSymbol, int type, String pair,
 //					   double amount, double value, LocalDateTime datetime, int walletID) {
 //
@@ -46,7 +49,7 @@ public class Transaction implements Comparable<Transaction> {
 //	}
 
 	public Asset getCoin() {
-		return new CryptoAsset(coinName, coinSymbol, pair, amount, value);
+		return new CryptoAsset(coinName, coinSymbol, coingeckoID, pair, amount, value);
 	}
 
 	
@@ -58,22 +61,18 @@ public class Transaction implements Comparable<Transaction> {
 		this.coinName = transactionData.get("name");
 		this.coinSymbol = transactionData.get("symbol");
 		this.buy = Integer.parseInt(transactionData.get("buy")) == 1;
+		this.coingeckoID = transactionData.get("coingeckoID");
 		this.pair = transactionData.get("pair");
 		this.amount = Double.parseDouble(transactionData.get("amount"));
 		this.value = Double.parseDouble(transactionData.get("value"));
 		this.dateTime = LocalDateTime.parse(transactionData.get("datetime"), myFormatObj);
 		this.walletID = Integer.parseInt(transactionData.get("walletID"));
-		
+		if (!buy) amount *= -1;
 	}
 
 	public String getCoinName() {
 		return coinName;
 	}
-
-//	public static void createTransaction(String coinName, String coinSymbol, int type, String pair,
-//										 double amount, double value, LocalDateTime datetime, int walletID) {
-//		db.createTransaction(coinName, coinSymbol, type, pair, amount, value, datetime, walletID);
-//	}
 
 	public static void createTransaction(CryptoAsset coin, Asset pair, boolean buy, LocalDateTime datetime, int walletID) {
 		db.createTransaction(coin, pair, buy, datetime, walletID);
@@ -88,7 +87,6 @@ public class Transaction implements Comparable<Transaction> {
 
 	@Override
 	public int compareTo(Transaction t) {
-		
 		return this.getCoinName().compareTo(t.getCoinName());
 	}
 	

@@ -23,8 +23,17 @@ public class JSONParser {
         try {
             String content = getJSONContent(new FileReader(fileName));
             jsonArray = new JSONArray(content);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        return jsonArray;
+    }
+
+    public static JSONArray getJSONArrayFileData(File file) {
+        JSONArray jsonArray;
+        try {
+            String content = getJSONContent(new FileReader(file));
+            jsonArray = new JSONArray(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,8 +45,6 @@ public class JSONParser {
         try {
             String content = getJSONContent(new FileReader(fileName));
             json = new JSONObject(content);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

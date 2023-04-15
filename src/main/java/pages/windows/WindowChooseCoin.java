@@ -1,6 +1,7 @@
-package database;
+package pages.windows;
 
-import pages.PageNewTransaction;
+import assets.Asset;
+import assets.data.CoingeckoData;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -10,22 +11,32 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class WindowChooseCoin {
-    ArrayList<? extends Asset> assets = CoingeckoData.marketCoins();
+//    ArrayList<? extends Asset> assets = CoingeckoData.marketCoins;
+    ArrayList<? extends Asset> assets = CoingeckoData.coinGecko.marketCoins;
 //    private final JPanel screen;
     private JPanel exampleCoin = null;
     private Asset selctedCoin = null;
-    private PageNewTransaction page;
-    private JFrame frame;
+    private final WindowNewTransaction page;
+    private final JFrame frame;
+    private static boolean windowAlreadyOpened = false;
 //    private
 
 
-    public WindowChooseCoin(PageNewTransaction page) {
+    public WindowChooseCoin(WindowNewTransaction page) {
 //        this.assets = ;
         this.page = page;
         this.frame = new JFrame();
+        if (windowAlreadyOpened) return;
+        else windowAlreadyOpened = true;
         JPanel screen = screen();
         for (Component comp: screen.getComponents()) { comp.setPreferredSize(comp.getPreferredSize()); }
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                windowAlreadyOpened = false;
+            }
+        });
         frame.add(screen);
 //        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(new Rectangle(400, 400));
@@ -51,7 +62,7 @@ public class WindowChooseCoin {
 
     private JPanel coinNameArea(Asset asset) {
         JPanel coinNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 15)); coinNamePanel.setBackground(Color.green);
-        JLabel name = new JLabel(asset.name + " (" + asset.symbol.toUpperCase() + ")"); name.setFont(new Font("", Font.BOLD, 13));
+        JLabel name = new JLabel(asset.getName() + " (" + asset.getSymbol().toUpperCase() + ")"); name.setFont(new Font("", Font.BOLD, 13));
         coinNamePanel.add(name);
         return coinNamePanel;
     }
@@ -66,10 +77,8 @@ public class WindowChooseCoin {
             @Override
             public void mouseClicked(MouseEvent e) {
                 page.updateSelectedCoin(asset);
+                windowAlreadyOpened = false;
                 frame.dispose();
-//                selctedCoin = asset;
-//                System.out.println();
-
             }
             @Override
             public void mouseEntered(MouseEvent e)
@@ -83,9 +92,6 @@ public class WindowChooseCoin {
         JPanel coinNamePanel = coinNameArea(asset);
         JPanel coinIconPanel = coinIcon(asset);
 
-
-
-
         coinBoxPanel.add(coinIconPanel, BorderLayout.WEST);
         coinBoxPanel.add(coinNamePanel, BorderLayout.CENTER);
         coinBoxPanel.setPreferredSize(new Dimension(0, 50));
@@ -94,35 +100,13 @@ public class WindowChooseCoin {
         return coinBoxPanel;
     }
 
-
-//    private JPanel coinBoxPanel(Asset asset) {
-////        JPanel coinBoxPanel = new JPanel(new BorderLayout()); coinBoxPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black));
-//
-//
-//        JPanel coinBoxPanel = new JPanel(new BorderLayout()); coinBoxPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black));
-//
-//        JPanel coinNamePanel = coinNameArea(asset);
-//        JPanel coinIconPanel = coinIcon(asset);
-//
-//        coinBoxPanel.add(coinIconPanel, BorderLayout.WEST);
-//        coinBoxPanel.add(coinNamePanel, BorderLayout.CENTER);
-//        coinBoxPanel.setPreferredSize(new Dimension(0, 50));
-//
-////        coinBoxPanel
-//        return coinBoxPanel;
-//    }
-
-
-
     private JPanel coinsBoxesPanel() {
         JPanel coinsBoxesPanel = new JPanel(); coinsBoxesPanel.setLayout(new BoxLayout(coinsBoxesPanel, BoxLayout.Y_AXIS));
         JPanel rigidArea = new JPanel(); rigidArea.setPreferredSize(new Dimension(0, 300));
 
-
         for (Asset asset : assets) coinsBoxesPanel.add(coinBoxPanel(asset));
 
         coinsBoxesPanel.add(rigidArea);
-
 
         return coinsBoxesPanel;
     }
@@ -194,10 +178,8 @@ public class WindowChooseCoin {
 
         JPanel textFieldPanel = textFieldPanel(coinsPanel);
 
-
         screen.add(textFieldPanel, BorderLayout.NORTH);
         screen.add(coinsScrollPane, BorderLayout.CENTER);
-
 
         return screen;
     }

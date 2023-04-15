@@ -1,4 +1,4 @@
-package pages;
+package pages.components;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -27,9 +27,7 @@ public class DoubleTextField extends JTextField {
             String proposedText = currentText.substring(0, offs) + str + currentText.substring(offs);
             Matcher matcher = doublePattern.matcher(proposedText);
 
-            if (matcher.matches()) {
-                super.insertString(offs, str, a);
-            }
+            if (matcher.matches()) super.insertString(offs, str, a);
         }
     }
 

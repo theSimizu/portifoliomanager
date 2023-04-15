@@ -1,17 +1,18 @@
-package pages;
+package pages.windows;
 
-import database.Wallet;
+import assets.Wallet;
+import pages.Page;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class PageNewWallet extends JFrame {
+public class WindowNewWallet extends JFrame {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private static boolean windowOpened = false;
     private final Page mainPage;
-    public PageNewWallet(Page mainPage) {
+    public WindowNewWallet(Page mainPage) {
         this.mainPage = mainPage;
         
         addWindowListener(new WindowAdapter() {
@@ -31,7 +32,7 @@ public class PageNewWallet extends JFrame {
 
     private void save(JTextField walletName) {
         Wallet.createWallet(walletName.getText());
-        mainPage.update();
+        mainPage.newWalletUpdate();
         dispose();
     }
     private JPanel screen() {

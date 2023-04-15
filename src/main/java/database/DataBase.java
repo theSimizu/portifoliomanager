@@ -1,5 +1,9 @@
 package database;
 
+import assets.Asset;
+import assets.crypto.CryptoAsset;
+import assets.crypto.Transaction;
+
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -87,7 +91,7 @@ public class DataBase {
 		String symbol = coin.getSymbol();
 		String pairSymbol = pair.getSymbol();
 		double amount = coin.getAmount();
-		double value = coin.getValue();
+		double value = coin.getBuySellDollarUnitaryValue();
 		String createTransaction =
 				"INSERT INTO Transactions(name, coingeckoID, symbol, buy, pair, amount, value, datetime, walletID) VALUES("
 						+ "'" + name + "',"

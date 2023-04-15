@@ -1,6 +1,12 @@
-package pages;
+package pages.windows;
 
-import database.*;
+import assets.Asset;
+import assets.crypto.CryptoAsset;
+import assets.FiatAsset;
+import assets.Wallet;
+import main.Screen;
+import pages.components.DoubleTextField;
+import pages.components.WalletBoxPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,33 +16,41 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class PageNewTransaction extends JFrame {
+public class WindowNewTransaction extends JFrame {
     private static final int width = 650, height = 400;
-    private static boolean windowOpened = false;
+    private static boolean windowAlreadyOpened = false;
     private int line = 0;
     private boolean buy, buttonPressed;
-    private final GridBagConstraints gbc = new GridBagConstraints();
-    private final Wallet wallet;
-    private JTextField amountInput, valueInput;
-    private JLabel totalLabel;
-    private final static ArrayList<CryptoAsset> marketAssets = CoingeckoData.marketCoins();
-    private final ArrayList<FiatAsset> fiatAssets = FiatAsset.getFiatList();
-    private JButton selectCoinButton;
-    private JComboBox<Asset> pairComboBox;
     private Asset selectedCoin;
+    private JLabel totalLabel;
+    private JButton selectCoinButton;
     private String currencySymbol;
+    private JTextField amountInput, valueInput;
+    private JComboBox<Asset> pairComboBox;
+    private final Wallet wallet;
     private final WalletBoxPanel walletBoxPanel;
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private final ArrayList<FiatAsset> fiatAssets = FiatAsset.getFiatList();
 
-    public PageNewTransaction(WalletBoxPanel walletBoxPanel) {
+
+    public WindowNewTransaction(WalletBoxPanel walletBoxPanel) {
         this.walletBoxPanel = walletBoxPanel;
         this.wallet = walletBoxPanel.getWallet();
+        if (windowAlreadyOpened) return;
+        else windowAlreadyOpened = true;
         setBounds(new Rectangle(width, height));
         setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
-
         JPanel screen = screen();
         Arrays.stream(screen.getComponents()).forEach(e -> e.setPreferredSize(e.getPreferredSize()));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                windowAlreadyOpened = false;
+            }
+        });
 
         add(screen);
     }
@@ -66,7 +80,6 @@ public class PageNewTransaction extends JFrame {
     private JComboBox<Asset> pairComboBox(ArrayList<? extends Asset> assets) {
         JComboBox<Asset> comboBox = new JComboBox<>(assets.toArray(new Asset[0]));
         comboBox.addActionListener(e -> updatePair((Asset) Objects.requireNonNull(comboBox.getSelectedItem())));
-
         return comboBox;
     }
 
@@ -88,7 +101,6 @@ public class PageNewTransaction extends JFrame {
                 updateTotal();
             }
         };
-
         JTextField field = new DoubleTextField();
         field.addKeyListener(keyAdapter);
         return field;
@@ -98,7 +110,7 @@ public class PageNewTransaction extends JFrame {
     public void updateSelectedCoin(Asset asset) {
         selectedCoin = asset;
         selectedCoin.setPair(((Objects.requireNonNull(pairComboBox.getSelectedItem())).toString()));
-        this.valueInput.setText(selectedCoin.getQuotationValue());
+        this.valueInput.setText(""+selectedCoin.getCurrentConvertedUnitaryValue());
         this.selectCoinButton.setText(selectedCoin.getName());
         updateTotal();
     }
@@ -107,7 +119,7 @@ public class PageNewTransaction extends JFrame {
         currencySymbol = pair.getCurrencySymbol();
         if (selectedCoin != null) {
             selectedCoin.setPair(pair.toString());
-            this.valueInput.setText(selectedCoin.getQuotationValue());
+            this.valueInput.setText(""+selectedCoin.getCurrentConvertedUnitaryValue());
         }
         updateTotal();
 
@@ -145,10 +157,14 @@ public class PageNewTransaction extends JFrame {
             } else if (valueInput.getText().equals("")) {
                 warningMessage.setText("INSERT THE VALUE");
             } else {
-                selectedCoin.setValue(Double.parseDouble(valueInput.getText()));
+                selectedCoin.setBuySellDollarUnitaryValue(Double.parseDouble(valueInput.getText()));
                 selectedCoin.setAmount(Double.parseDouble(amountInput.getText()));
                 wallet.createTransaction((CryptoAsset) selectedCoin, selectedCoin.getPair(), buy, LocalDateTime.now());
-                walletBoxPanel.updateBody();
+                walletBoxPanel.setBody(true);
+                windowAlreadyOpened = false;
+//                Screen.pageCrypto.update();
+                Screen.pages[0].update();
+//                Main.screen.pageCrypto.update();
                 this.dispose();
             }
         });
@@ -157,7 +173,6 @@ public class PageNewTransaction extends JFrame {
     }
 
     private JPanel screen() {
-//        e -> {}
         JPanel screen = new JPanel(new GridBagLayout());
 
         JLabel walletNameLabel = walletNameLabel();
@@ -172,11 +187,8 @@ public class PageNewTransaction extends JFrame {
         amountInput = valueField();
         valueInput = valueField();
         totalLabel = new JLabel(currencySymbol + "0.00", JLabel.CENTER);
-//        JButton saveButton = new JButton("Save");
         JLabel warningMessage = warningLabel();
         JButton saveButton = saveButton(warningMessage);
-
-
 
         gbc.anchor = GridBagConstraints.FIRST_LINE_START;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -194,9 +206,6 @@ public class PageNewTransaction extends JFrame {
 
         addGB(screen, sellButton, 2); // Sell button
         nextLine();
-
-
-
 
 
         // LINE 2

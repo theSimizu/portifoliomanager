@@ -1,5 +1,6 @@
-package database;
+package assets;
 
+import database.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

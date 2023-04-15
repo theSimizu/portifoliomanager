@@ -1,4 +1,4 @@
-package database;
+package assets.data;
 
 import org.json.JSONArray;
 import org.json.JSONException;
