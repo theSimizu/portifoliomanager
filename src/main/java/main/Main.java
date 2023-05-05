@@ -1,5 +1,9 @@
 package main;
 
+import assets.data.CoingeckoData;
+import assets.data.FiatCoinsData;
+import database.DataBase;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -12,6 +16,9 @@ public class Main extends JFrame {
 	public static Screen screen;
 
 	public static void main(String[] args) {
+		DataBase.startDatabase();
+		CoingeckoData.start();
+		FiatCoinsData.start();
 		screen = new Screen();
 		Main frame = new Main();
 		generateFrame(frame);

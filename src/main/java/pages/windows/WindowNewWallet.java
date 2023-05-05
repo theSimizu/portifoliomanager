@@ -1,7 +1,10 @@
 package pages.windows;
 
-import assets.Wallet;
+import wallets.BankWallet;
+import wallets.CryptoWallet;
 import pages.Page;
+import pages.PageBank;
+import pages.PageCrypto;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,14 +17,12 @@ public class WindowNewWallet extends JFrame {
     private final Page mainPage;
     public WindowNewWallet(Page mainPage) {
         this.mainPage = mainPage;
-        
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 windowOpened = false;
             }
         });
-
         int width = 500;
         int height = 150;
         setBounds(new Rectangle(width, height));
@@ -31,10 +32,15 @@ public class WindowNewWallet extends JFrame {
     }
 
     private void save(JTextField walletName) {
-        Wallet.createWallet(walletName.getText());
+        if (mainPage instanceof PageCrypto) {
+            CryptoWallet.createWallet(walletName.getText());
+        } else if(mainPage instanceof PageBank) {
+            BankWallet.createWallet(walletName.getText());
+        }
         mainPage.newWalletUpdate();
         dispose();
     }
+
     private JPanel screen() {
         JPanel screen = new JPanel();
         JTextField walletName = new JTextField(16);

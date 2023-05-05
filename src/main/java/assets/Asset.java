@@ -19,7 +19,8 @@ public abstract class Asset implements Comparable<Asset> {
 		this.pair = new FiatAsset(pairSymbol);
 	}
 
-	public Asset(String name, String symbol, double value) {
+	public Asset(String id, String name, String symbol, double value) {
+		this.id = id;
 		this.name = name;
 		this.symbol = symbol;
 		this.buySellDollarUnitaryValue = value;
@@ -27,6 +28,13 @@ public abstract class Asset implements Comparable<Asset> {
 	}
 
 	protected Asset() {
+	}
+
+	public Asset(String coinName, String coinSymbol, double amount, double value) {
+		this.name = coinName;
+		this.symbol = coinSymbol;
+		this.amount = amount;
+		this.buySellDollarUnitaryValue = value;
 	}
 
 	public void convertTo(String fiatSymbol) {
@@ -112,6 +120,10 @@ public abstract class Asset implements Comparable<Asset> {
 	}
 
 	// SETTERS
+
+	public void setName(String name) { this.name = name; }
+
+	public void setCurrencySymbol(String currencySymbol) { this.currencySymbol = currencySymbol; }
 
 	public void setAmount(double amount) {
 		this.amount = amount;

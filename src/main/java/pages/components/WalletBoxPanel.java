@@ -2,7 +2,7 @@ package pages.components;
 
 import assets.Asset;
 import assets.FiatAsset;
-import assets.Wallet;
+import wallets.Wallet;
 import pages.Page;
 import pages.windows.WindowNewTransaction;
 
@@ -66,7 +66,6 @@ public class WalletBoxPanel extends JPanel {
         body.setLayout(new BoxLayout(body, BoxLayout.PAGE_AXIS));
         body.add(transactionButton);
         for (Asset asset : wallet.getAssets()) body.add(coinDataBox(asset));
-
         body.add(totalDataBox());
         body.revalidate();
         body.repaint();

@@ -1,35 +1,44 @@
 package pages;
 
-import assets.Wallet;
-import assets.crypto.CryptoWallet;
+import assets.FiatAsset;
 import pages.components.WalletBoxPanel;
-import pages.windows.WindowNewWallet;
+import wallets.Wallet;
+import wallets.CryptoWallet;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class PageCrypto extends Page{
-
 	private static final long serialVersionUID = 1L;
 
 	public PageCrypto() {
-		super(CryptoWallet.getWallets());
-		setBackground(new Color(0x01afc7));
+		super();
 	}
 
 	@Override
-	public void newWalletUpdate() {
-		portfoliosPanel.removeAll();
-		wallets = CryptoWallet.getWallets();
-		for (Wallet wallet : wallets) { portfoliosPanel.add(new WalletBoxPanel(wallet)); }
-		portfoliosPanel.add(newWalletButton);
-		portfoliosPanel.add(rigidArea);
+	protected ArrayList<Wallet> getWallets() {
+		return CryptoWallet.getWallets();
+	}
+
+	@Override
+	public void update() {
+		// PORTFOLIO PANEL
+		for (Component comp : portfoliosPanel.getComponents()) {
+			if (comp instanceof WalletBoxPanel) { ((WalletBoxPanel) comp).setBody(); }
+		}
 		portfoliosPanel.revalidate();
 		portfoliosPanel.repaint();
-	}
 
-	@Override
-	protected void setNewWalletButton() {
-		super.setNewWalletButton(e -> new WindowNewWallet(this));
+		// TOTAL MONEY PANEL
+		String symbol = new FiatAsset(Page.fiat).getCurrencySymbol();
+		total = CryptoWallet.getWalletsTotal(wallets);
+		totalMoneyPanel.removeAll();
+		totalMoneyPanel.setBackground(new Color(0xf01e23));
+		totalMoneyPanel.setPreferredSize(new Dimension(0, 60));
+		totalMoneyPanel.add(new JLabel(CryptoWallet.getWalletsTotalString(symbol, wallets)));
+		totalMoneyPanel.revalidate();
+		totalMoneyPanel.repaint();
 	}
 
 }

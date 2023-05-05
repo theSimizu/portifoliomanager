@@ -5,39 +5,31 @@ import database.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.URL;
-import java.sql.Timestamp;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class CoingeckoData {
-    private HttpsURLConnection connection = null;
-    private final File marketDataFile = new File("market_data.json");
-    private JSONArray marketData;
-    public ArrayList<CryptoAsset> marketCoins;
-    public static CoingeckoData coinGecko = new CoingeckoData();
+public class CoingeckoData extends APIsData {
+    private static final File marketDataFile = new File("market_data.json");
+    private static JSONArray marketData;
+    public static ArrayList<CryptoAsset> marketCoins;
 
-    private CoingeckoData() {
+    public static void start() {
         try {
-            this.update();
+            update();
         } catch (IOException e) {
             e.printStackTrace();
-//            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
-        this.marketData = JSONParser.getJSONArrayFileData(marketDataFile);
-        this.marketCoins = marketCoins();
+        marketData = JSONParser.getJSONArrayFileData(marketDataFile);
+        marketCoins = new ArrayList<>();
+        updateMarketCoinsArrayList();
     }
 
-    private void setConnection(String link, String method) throws IOException {
-        URL url = new URL(link);
-        connection = (HttpsURLConnection) url.openConnection();
-        connection.setRequestMethod(method);
-    }
-
-    private ArrayList<CryptoAsset> marketCoins() {
-        ArrayList<CryptoAsset> assets = new ArrayList<>();
+    public static void updateMarketCoinsArrayList() {
+        marketCoins.clear();
         for (int i = 0; i < marketData.length(); i++) {
             JSONObject json = marketData.getJSONObject(i);
             String id = (String) json.get("id");
@@ -45,12 +37,11 @@ public class CoingeckoData {
             String symbol = (String) json.get("symbol");
             Object priceObject = json.get("current_price");
             double price = (priceObject instanceof Integer) ? ((Integer) priceObject).doubleValue() : (Double) priceObject;
-            assets.add(new CryptoAsset(id, name, symbol, price));
+            marketCoins.add(new CryptoAsset(id, name, symbol, price));
         }
-        return assets;
     }
 
-    public double getCoinCurrentDollarPrice(String coinGeckoID) {
+    public static double getCoinCurrentDollarPrice(String coinGeckoID) {
         double price = 0;
         for (int i = 0; i < marketData.length(); i++) {
             JSONObject json = marketData.getJSONObject(i);
@@ -62,61 +53,24 @@ public class CoingeckoData {
         return price;
     }
 
-    public void updateMarketData() throws IOException {
-        setConnection("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd", "GET");
-        String content = JSONParser.getJSONContent(new InputStreamReader(connection.getInputStream()));
-        connection.disconnect();
-        FileWriter fw = new FileWriter(marketDataFile);
-        fw.write(content);
-        fw.close();
-    }
-
-    public void updateIcons() throws IOException {
-        JSONArray coins = JSONParser.getJSONArrayFileData("market_data.json");
+    public static void updateIcons() throws IOException, URISyntaxException {
+        JSONArray coins = JSONParser.getJSONArrayFileData(marketDataFile);
         for(int i = 0; i < coins.length(); i++) {
             JSONObject coin = coins.getJSONObject(i);
-            BufferedInputStream in = new BufferedInputStream(new URL(coin.getString("image")).openStream());
+            BufferedInputStream in = new BufferedInputStream(new URI(coin.getString("image")).toURL().openStream());
             FileOutputStream fileOutputStream = new FileOutputStream("icons/" + coin.get("id") + ".png");
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) fileOutputStream.write(dataBuffer, 0, bytesRead);
             fileOutputStream.close();
         }
-
-    }
-
-    public JSONArray getMarketData() {
-        return marketData;
     }
 
 
-    private void update() throws IOException {
-        File updateTime = new File("update_time.txt");
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        long currentTime = timestamp.getTime();
-        if (updateTime.createNewFile()) {
-            FileWriter writer = new FileWriter(updateTime);
-            writer.write(Long.toString(currentTime));
-            writer.close();
-            return;
+    private static void update() throws IOException, URISyntaxException {
+        if (timeToUpdate()) {
+            updateFile("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd", "GET", marketDataFile);
+            System.out.println("kkk");
         }
-        Scanner reader = new Scanner(updateTime);
-        String lastTime = reader.nextLine();
-        reader.close();
-        if (currentTime - Long.parseLong(lastTime) > 600) {
-            PrintWriter writer = new PrintWriter(updateTime);
-            writer.print("");
-            writer.write(Long.toString(currentTime));
-            writer.close();
-//            updateIcons();
-            updateMarketData();
-        }
-
-
-
     }
-
-
-
-
 }

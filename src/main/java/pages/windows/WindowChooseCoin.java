@@ -1,7 +1,11 @@
 package pages.windows;
 
 import assets.Asset;
+import assets.FiatAsset;
 import assets.data.CoingeckoData;
+import assets.data.FiatCoinsData;
+import wallets.BankWallet;
+import wallets.CryptoWallet;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -11,26 +15,23 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class WindowChooseCoin {
-//    ArrayList<? extends Asset> assets = CoingeckoData.marketCoins;
-    ArrayList<? extends Asset> assets = CoingeckoData.coinGecko.marketCoins;
-//    private final JPanel screen;
-    private JPanel exampleCoin = null;
-    private Asset selctedCoin = null;
+    private ArrayList<? extends Asset> assets;
     private final WindowNewTransaction page;
-    private final JFrame frame;
+    private JFrame frame;
+    private JPanel screen;
     private static boolean windowAlreadyOpened = false;
-//    private
-
 
     public WindowChooseCoin(WindowNewTransaction page) {
-//        this.assets = ;
         this.page = page;
-        this.frame = new JFrame();
         if (windowAlreadyOpened) return;
         else windowAlreadyOpened = true;
-        JPanel screen = screen();
+        screen = screen();
+        frame = frame();
         for (Component comp: screen.getComponents()) { comp.setPreferredSize(comp.getPreferredSize()); }
+    }
 
+    private JFrame frame() {
+        JFrame frame = new JFrame();
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -38,25 +39,20 @@ public class WindowChooseCoin {
             }
         });
         frame.add(screen);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(new Rectangle(400, 400));
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-
+        return frame;
     }
-
 
     private JPanel coinIcon(Asset asset) {
         JPanel coinIconPanel = new JPanel();
         ImageIcon imageIcon = new ImageIcon("icons/" + asset.getId() + ".png");
         Image newImg = imageIcon.getImage().getScaledInstance(40, 40,  java.awt.Image.SCALE_SMOOTH);
-
         coinIconPanel.add(new JLabel(new ImageIcon(newImg)));
         coinIconPanel.setPreferredSize(new Dimension(75, 0));
         coinIconPanel.setBackground(Color.red);
-
         return coinIconPanel;
     }
 
@@ -67,13 +63,9 @@ public class WindowChooseCoin {
         return coinNamePanel;
     }
 
-
-
     private JPanel coinBoxPanel(Asset asset) {
         JPanel coinBoxPanel = new JPanel(new BorderLayout()); coinBoxPanel.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black));
-        exampleCoin = coinBoxPanel;
         coinBoxPanel.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
                 page.updateSelectedCoin(asset);
@@ -85,8 +77,10 @@ public class WindowChooseCoin {
             { for (Component comp : coinBoxPanel.getComponents()) comp.setBackground(Color.black); }
 
             @Override
-            public void mouseExited(MouseEvent e)
-            { for (int i = 0; i < exampleCoin.getComponentCount(); i++) coinBoxPanel.getComponent(i).setBackground(exampleCoin.getComponent(i).getBackground()); }
+            public void mouseExited(MouseEvent e) {
+                coinBoxPanel.getComponent(0).setBackground(Color.red);
+                coinBoxPanel.getComponent(1).setBackground(Color.green);
+            }
         });
 
         JPanel coinNamePanel = coinNameArea(asset);
@@ -101,13 +95,12 @@ public class WindowChooseCoin {
     }
 
     private JPanel coinsBoxesPanel() {
+        if (this.page.getWallet() instanceof CryptoWallet) assets = CoingeckoData.marketCoins;
+        else if (this.page.getWallet() instanceof BankWallet) assets = FiatCoinsData.getFiats();
         JPanel coinsBoxesPanel = new JPanel(); coinsBoxesPanel.setLayout(new BoxLayout(coinsBoxesPanel, BoxLayout.Y_AXIS));
         JPanel rigidArea = new JPanel(); rigidArea.setPreferredSize(new Dimension(0, 300));
-
         for (Asset asset : assets) coinsBoxesPanel.add(coinBoxPanel(asset));
-
         coinsBoxesPanel.add(rigidArea);
-
         return coinsBoxesPanel;
     }
 
@@ -115,12 +108,8 @@ public class WindowChooseCoin {
         JScrollPane scroll = new JScrollPane(panel);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.getVerticalScrollBar().isVisible();
-
         return scroll;
     }
-
-
-
 
     private DocumentListener textFieldFilter(JPanel coinsPanel, JTextField textField) {
         return new DocumentListener() {
@@ -136,7 +125,6 @@ public class WindowChooseCoin {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-
             }
 
             private void filter() {
@@ -147,21 +135,16 @@ public class WindowChooseCoin {
                     JPanel iconPanel = (JPanel) coinPanel.getComponent(1);
                     JLabel coinName = (JLabel) iconPanel.getComponent(0);
                     String coinNameText = coinName.getText().toLowerCase();
-
                     coinPanel.setVisible(coinNameText.contains(filterString));
                 }
-
             }
-
         };
     }
-
 
     private JPanel textFieldPanel(JPanel coinsPanel) {
         JTextField textField = new JTextField();
         DocumentListener textFieldFilter = textFieldFilter(coinsPanel, textField);
         textField.getDocument().addDocumentListener(textFieldFilter);
-
         JPanel textFieldPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
         textFieldPanel.add(textField);
         textField.setPreferredSize(new Dimension(250, 20));
@@ -175,9 +158,7 @@ public class WindowChooseCoin {
         JPanel screen = new JPanel(new BorderLayout());
         JPanel coinsPanel = coinsBoxesPanel();
         JScrollPane coinsScrollPane = panelToScrollPane(coinsPanel);
-
         JPanel textFieldPanel = textFieldPanel(coinsPanel);
-
         screen.add(textFieldPanel, BorderLayout.NORTH);
         screen.add(coinsScrollPane, BorderLayout.CENTER);
 

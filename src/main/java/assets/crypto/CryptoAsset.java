@@ -1,6 +1,7 @@
 package assets.crypto;
 
 import assets.Asset;
+import assets.Transaction;
 import assets.data.CoingeckoData;
 
 import java.util.ArrayList;
@@ -11,15 +12,12 @@ public class CryptoAsset extends Asset {
     // COIN RECOVERED FROM TRANSACTION
     public CryptoAsset(String name, String symbol, String coingeckoID, String pairSymbol, double amount, double value) {
         super(name, symbol, coingeckoID, pairSymbol, amount, value);
-        this.currentDollarUnitaryValue = CoingeckoData.coinGecko.getCoinCurrentDollarPrice(coingeckoID);
+        this.currentDollarUnitaryValue = CoingeckoData.getCoinCurrentDollarPrice(coingeckoID);
     }
 
     // USED FOR CREATE A NEW TRANSACTION
     public CryptoAsset(String coinGeckoID, String name, String symbol, double value) {
-        this.name = name;
-		this.id = coinGeckoID;
-		this.symbol = symbol;
-		this.buySellDollarUnitaryValue = value;
+        super(coinGeckoID, name, symbol, value);
     }
 
     public static ArrayList<CryptoAsset> getCryptos(ArrayList<Transaction> transactions) {

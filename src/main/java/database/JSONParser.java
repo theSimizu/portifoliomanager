@@ -7,14 +7,16 @@ import java.io.*;
 
 public class JSONParser {
 
-    public static String getJSONContent(Reader reader) throws IOException {
+    public static String getJSONContent(Reader reader) {
         StringBuilder content = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        String inputLine;
-        while ((inputLine = bufferedReader.readLine()) != null) {
-            content.append(inputLine);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String inputLine;
+            while ((inputLine = bufferedReader.readLine()) != null) content.append(inputLine);
+            bufferedReader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        bufferedReader.close();
         return content.toString();
     }
 
@@ -44,6 +46,17 @@ public class JSONParser {
         JSONObject json;
         try {
             String content = getJSONContent(new FileReader(fileName));
+            json = new JSONObject(content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return json;
+    }
+
+    public static JSONObject getJSONFileData(File file) {
+        JSONObject json;
+        try {
+            String content = getJSONContent(new FileReader(file));
             json = new JSONObject(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
