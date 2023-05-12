@@ -1,78 +1,33 @@
 package main;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
 
 import pages.Page;
+import pages.PageBank;
 import pages.PageCrypto;
 
-
-
-public class Screen extends JPanel implements MouseListener, MouseMotionListener{
+public class Screen extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public LeftPanel leftPanel;
-	public Page pageCrypto;
+	public static Page[] pages = { new PageCrypto(), new PageBank() };
+	public JPanel cardPanel;
+	public static LeftPanel leftPanel;
 
-
-	
 	public Screen() {
-		setBackground(new Color(0x696969));
-		setLayout(new BorderLayout());
-		this.fullfil();
-		this.addMouseListener(this);
-		this.addMouseMotionListener(this);
-//		buttons();
-	}
-	
-	private void fullfil() {
-		leftPanel = new LeftPanel();
-		pageCrypto = new PageCrypto();
-		pageCrypto.pageAdjusts();
+		cardPanel = new JPanel(new CardLayout());
+		leftPanel = new LeftPanel(cardPanel);
+		this.setBackground(new Color(0x696969));
+		this.setLayout(new BorderLayout());
 		this.add(leftPanel, BorderLayout.WEST);
-		this.add(pageCrypto, BorderLayout.CENTER);
-	}
-	
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		leftPanel.resizePanel(e);
+		cardPanel.add(pages[0], "Crypto");
+		cardPanel.add(pages[1], "Bank");
+		this.add(cardPanel, BorderLayout.CENTER);
 	}
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		leftPanel.mouseOnBorder(e);
-		
+	public static void update() {
+		for (Page page : pages) page.update();
+		leftPanel.update();
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		leftPanel.setMoving(true);
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) { leftPanel.setMoving(false); }
 }

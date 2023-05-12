@@ -1,11 +1,5 @@
 package maven.portfoliomanager;
 
-import java.util.ArrayList;
-import java.util.function.UnaryOperator;
-
-import database.DataBase;
-import database.Wallet;
-
 public class TestSQL {
 
 
