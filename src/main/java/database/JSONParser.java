@@ -53,14 +53,22 @@ public class JSONParser {
         return json;
     }
 
+    public static JSONObject getJSONFileData(InputStream file) {
+        JSONObject json;
+        String content = getJSONContent(new BufferedReader(new InputStreamReader(file)));
+        json = new JSONObject(content);
+        return json;
+    }
+
     public static JSONObject getJSONFileData(File file) {
         JSONObject json;
+        String content = null;
         try {
-            String content = getJSONContent(new FileReader(file));
-            json = new JSONObject(content);
-        } catch (IOException e) {
+            content = getJSONContent(new FileReader(file));
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        json = new JSONObject(content);
         return json;
     }
 

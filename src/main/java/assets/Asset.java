@@ -24,7 +24,6 @@ public abstract class Asset implements Comparable<Asset> {
 		this.name = name;
 		this.symbol = symbol;
 		this.buySellDollarUnitaryValue = value;
-
 	}
 
 	protected Asset() {
@@ -46,7 +45,7 @@ public abstract class Asset implements Comparable<Asset> {
 	}
 
 	public boolean isEqual(Asset asset) {
-		return this.name.equalsIgnoreCase(asset.name);
+		return this.symbol.equalsIgnoreCase(asset.symbol);
 	}
 
 
@@ -141,7 +140,7 @@ public abstract class Asset implements Comparable<Asset> {
 	// OVERRIDE
 	@Override
 	public int compareTo(Asset asset) {
-		return (int)((-asset.getCurrentTotalDollarValue() + this.getCurrentTotalDollarValue()));
+		return (int)(100*(asset.getCurrentTotalDollarValue() - this.getCurrentTotalDollarValue()));
 	}
 
 	@Override

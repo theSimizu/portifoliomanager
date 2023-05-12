@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class CoingeckoData extends APIsData {
-    private static final File marketDataFile = new File("market_data.json");
+    private static final File marketDataFile = new File("resources/market_data.json");
     private static JSONArray marketData;
     public static ArrayList<CryptoAsset> marketCoins;
 
@@ -70,7 +70,6 @@ public class CoingeckoData extends APIsData {
     private static void update() throws IOException, URISyntaxException {
         if (timeToUpdate()) {
             updateFile("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd", "GET", marketDataFile);
-            System.out.println("kkk");
         }
     }
 }

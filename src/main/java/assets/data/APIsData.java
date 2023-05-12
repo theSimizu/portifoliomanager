@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class APIsData {
     protected static HttpsURLConnection connection = null;
-    private static final File updateTime = new File("update_time.txt");
+    private static final File updateTime = new File("resources/update_time.txt");
     protected static boolean timeToUpdate = false;
     private static final long currentTime = currentTime();
     private static final long lastUpdate = lastUpdate();
@@ -47,17 +47,6 @@ public class APIsData {
     }
 
     protected static boolean timeToUpdate() throws IOException {
-//        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//        long currentTime = timestamp.getTime();
-//        if (updateTime.createNewFile()) {
-//            FileWriter writer = new FileWriter(updateTime);
-//            writer.write(Long.toString(currentTime));
-//            writer.close();
-//            return true;
-//        }
-//        Scanner reader = new Scanner(updateTime);
-//        String lastTime = reader.nextLine();
-//        reader.close();
         if (currentTime - lastUpdate > 60000) {
             PrintWriter writer = new PrintWriter(updateTime);
             writer.print("");
@@ -76,4 +65,13 @@ public class APIsData {
         fw.write(content);
         fw.close();
     }
+
+//    protected static void updateFile(String link, String method, OutputStream file) throws IOException, URISyntaxException {
+//        setConnection(link, method);
+//        String content = JSONParser.getJSONContent(new InputStreamReader(connection.getInputStream()));
+//        connection.disconnect();
+//        BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(file));
+//        fw.write(content);
+//        fw.close();
+//    }
 }

@@ -3,6 +3,7 @@ package pages;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.*;
 
 import assets.FiatAsset;
@@ -68,6 +69,7 @@ public abstract class Page extends JPanel {
 	public void newWalletUpdate() {
 		portfoliosPanel.removeAll();
 		wallets = getWallets();
+		Collections.sort(wallets);
 		for (Wallet wallet : wallets) { portfoliosPanel.add(new WalletBoxPanel(wallet)); }
 		portfoliosPanel.add(newWalletButton);
 		portfoliosPanel.add(rigidArea);

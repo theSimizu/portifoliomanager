@@ -84,7 +84,8 @@ public class WindowNewTransaction extends JFrame {
         selectedCoin.setBuySellDollarUnitaryValue(Double.parseDouble(valueInput.getText()));
         selectedCoin.setAmount(Double.parseDouble(amountInput.getText()));
         wallet.createTransaction(selectedCoin, selectedCoin.getPair(), buy, LocalDateTime.now());
-        walletBoxPanel.setBody(true);
+//        walletBoxPanel.setBody(true);
+        walletBoxPanel.update(true);
         windowAlreadyOpened = false;
         CoingeckoData.updateMarketCoinsArrayList();
         Screen.update();

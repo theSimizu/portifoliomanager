@@ -26,7 +26,11 @@ public class PageBank extends Page{
     public void update() {
         // PORTFOLIO PANEL
         for (Component comp : portfoliosPanel.getComponents()) {
-            if (comp instanceof WalletBoxPanel) { ((WalletBoxPanel) comp).setBody(); }
+            if (comp instanceof WalletBoxPanel) {
+                ((WalletBoxPanel) comp).update();
+//                ((WalletBoxPanel) comp).setHeader();
+//                ((WalletBoxPanel) comp).setBody();
+            }
         }
         portfoliosPanel.revalidate();
         portfoliosPanel.repaint();

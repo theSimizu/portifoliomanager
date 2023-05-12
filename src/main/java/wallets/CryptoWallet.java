@@ -3,6 +3,7 @@ package wallets;
 import assets.Asset;
 import assets.crypto.CryptoAsset;
 import database.DataBase;
+import pages.Page;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -18,13 +19,9 @@ public class CryptoWallet extends Wallet {
     protected void setAssets() {
         super.loadTransactions("CryptoTransactions");
         super.assets = CryptoAsset.getCryptos(super.transactions);
-        Collections.reverse(assets);
-    }
-
-    @Override
-    public ArrayList<? extends Asset> getAssets() {
-        setAssets();
-        return assets;
+        super.setPair(Page.fiat);
+        Collections.sort(assets);
+        super.setTotal();
     }
 
 //  STATIC
@@ -45,7 +42,7 @@ public class CryptoWallet extends Wallet {
 
     public static double getWalletsTotal(ArrayList<Wallet> wallets) {
         double tot = 0;
-        for (Wallet wallet : wallets) tot += Double.parseDouble(wallet.getTotal());
+        for (Wallet wallet : wallets) tot += Double.parseDouble(wallet.getTotalString());
         return tot;
     }
 

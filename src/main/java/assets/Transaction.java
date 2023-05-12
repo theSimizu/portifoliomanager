@@ -84,6 +84,6 @@ public class Transaction implements Comparable<Transaction> {
 
 	@Override
 	public int compareTo(Transaction t) {
-		return this.getCoinName().compareTo(t.getCoinName());
+		return this.getCoinSymbol().compareTo(t.getCoinSymbol());
 	}
 }

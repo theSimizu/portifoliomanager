@@ -8,15 +8,17 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class FiatCoinsData extends APIsData {
-    private static final File fiatDataFile = new File("fiats.json");
-    private static final File fiatCodesFile = new File("fiat_codes.json");
+//    private static final InputStream fiatDataFile = FiatCoinsData.class.getResourceAsStream("resources/fiats.json");
+    private static final File fiatDataFile = new File("resources/fiats.json");
+    private static final File fiatCodesFile = new File("resources/fiat_codes.json");
     private static JSONObject fiatData;
     private static final JSONArray fiatSymbols = fiatCodes();
-    private static ArrayList<FiatAsset> fiats = new ArrayList<>();// = fiats();
+    private static final ArrayList<FiatAsset> fiats = new ArrayList<>();// = fiats();
 
     public static void start() {
         try {
@@ -56,7 +58,6 @@ public class FiatCoinsData extends APIsData {
 
     private static void updateFiatsDataFile() throws IOException, URISyntaxException {
         if (!timeToUpdate()) return;
-        System.out.println("kkkkkk");
         ArrayList<String> pairCodes = new ArrayList<>();
         for (int i = 0; i < fiatSymbols.length(); i++) {
             String cur = ((String)fiatSymbols.get(i)).toLowerCase();
@@ -67,7 +68,6 @@ public class FiatCoinsData extends APIsData {
         updateFile("https://economia.awesomeapi.com.br/json/last/" + codes, "GET", fiatDataFile);
     }
 
-
     private static JSONArray fiatCodes() {
         JSONObject fiatSymbols = JSONParser.getJSONFileData(fiatCodesFile);
         return (JSONArray)fiatSymbols.get("fiat_codes");
@@ -76,8 +76,6 @@ public class FiatCoinsData extends APIsData {
     public static ArrayList<FiatAsset> getFiats() {
         return fiats;
     }
-
-
 
     public static double getCoinCurrentDollarPrice(String symbol) {
         if (symbol.equals("USD")) return 1;

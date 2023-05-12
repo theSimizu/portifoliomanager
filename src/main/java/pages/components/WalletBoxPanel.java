@@ -14,81 +14,39 @@ public class WalletBoxPanel extends JPanel {
     private final JPanel header = new JPanel(new BorderLayout());
     private final JPanel body = new JPanel();
     private final JPanel transactionButton = new JPanel(new BorderLayout());
+    private final JPanel totalDataBox = new JPanel(new GridBagLayout());
 
     public WalletBoxPanel(Wallet wallet) {
         this.wallet = wallet;
+        this.wallet.setPair(Page.fiat);
         this.setLayout(new BorderLayout());
         this.setTransactionButton();
-        this.setHeader();
-        this.setBody(false);
+        this.update(false);
         this.add(header, BorderLayout.NORTH);
         this.add(body, BorderLayout.CENTER);
+    }
 
+    private String getTotal() {
+        String currencySymbol = new FiatAsset(Page.fiat).getCurrencySymbol();
+        return currencySymbol + wallet.getTotalString();
     }
 
     public Wallet getWallet() {
         return this.wallet;
     }
 
-    private void setHeader() {
-        JButton headerAction = new JButton();
-        headerAction.setLayout(new BorderLayout());
-        header.setBackground(Color.gray);
-        header.setPreferredSize(new Dimension(0, 30));
-        header.add(headerAction, BorderLayout.CENTER);
-
-        headerAction.setLayout(new GridBagLayout());
-        headerAction.setBackground(null);
-        headerAction.add(new JLabel(wallet.getName()));
-        headerAction.addActionListener(e -> { body.setVisible(!body.isVisible()); });
-    }
-
-
-
-    private JPanel totalDataBox() {
-//        System.out.println(wallet.getTotal());
-        GridBagConstraints gbc = new GridBagConstraints();
-        JPanel panel = new JPanel(new GridBagLayout());
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Total:"));
-        gbc.gridy+=1;
-        String symb = new FiatAsset(Page.fiat).getCurrencySymbol();
-        panel.add(new JLabel(symb+wallet.getTotal()), gbc);
-        panel.setPreferredSize(new Dimension(0, 50));
-        panel.setBackground(null);
-
-        return panel;
-    }
-
-    public void setBody() {
-        body.removeAll();
-        body.setLayout(new BoxLayout(body, BoxLayout.PAGE_AXIS));
-        body.add(transactionButton);
-        for (Asset asset : wallet.getAssets()) body.add(coinDataBox(asset));
-        body.add(totalDataBox());
-        body.revalidate();
-        body.repaint();
-    }
-
-    public void setBody(boolean visible) {
-        body.setVisible(visible);
+    public void update() {
         setBody();
+        setHeader();
+        setTotalDataBox();
     }
 
-    private void setTransactionButton() {
-        JButton button = new JButton("New Transaction");
-        button.addActionListener(e -> new WindowNewTransaction(this));
-        button.setBackground(null);
-
-        transactionButton.setPreferredSize(new Dimension(0, 35));
-        transactionButton.setBackground(new Color(0x999999));
-        transactionButton.add(button);
+    public void update(boolean visible) {
+        setBody(visible);
+        setHeader();
     }
 
     private JPanel coinDataBox(Asset asset) {
-        asset.convertTo(Page.fiat);
-
 //      ICON //////////////////////////////////////////////////////////////////////////////////
         JPanel coinImgPanel = new JPanel();
         coinImgPanel.setBackground(null);
@@ -105,7 +63,7 @@ public class WalletBoxPanel extends JPanel {
         coinInfoPanel.setBackground(null);
         Font font = new Font("arial", Font.PLAIN, 18);
 
-        JLabel coinNameLabel = new JLabel(asset.getName());
+        JLabel coinNameLabel = new JLabel(asset.getName() + " (" + asset.getSymbol().toUpperCase() + ")");
         coinNameLabel.setForeground(Color.white);
         coinNameLabel.setFont(font);
 
@@ -138,6 +96,64 @@ public class WalletBoxPanel extends JPanel {
         coinBoxPanel.add(coinInfoPanel, BorderLayout.CENTER);
 
         return coinBoxPanel;
+    }
+
+    // SET COMPONENTS
+    public void setHeader() {
+        GridBagConstraints c = new GridBagConstraints();
+        JButton headerAction = new JButton();
+        headerAction.setLayout(new GridBagLayout());
+
+        header.removeAll();
+        header.setBackground(Color.gray);
+        header.setPreferredSize(new Dimension(0, 50));
+        header.add(headerAction, BorderLayout.CENTER);
+        c.gridy = 0;
+        headerAction.add(new JLabel(wallet.getName()), c);
+        c.gridy += 1;
+        headerAction.add(new JLabel(getTotal()), c);
+        headerAction.setBackground(null);
+        headerAction.addActionListener(e -> { body.setVisible(!body.isVisible()); });
+        header.revalidate();
+        header.repaint();
+    }
+
+    private void setBody() {
+        body.removeAll();
+        body.setLayout(new BoxLayout(body, BoxLayout.PAGE_AXIS));
+        body.add(transactionButton);
+        for (Asset asset : wallet.getAssets()) body.add(coinDataBox(asset));
+        body.add(totalDataBox);
+        body.revalidate();
+        body.repaint();
+    }
+
+    private void setBody(boolean visible) {
+        body.setVisible(visible);
+        setBody();
+    }
+
+    private void setTotalDataBox() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy = 0;
+        totalDataBox.removeAll();
+        totalDataBox.add(new JLabel("Total:"));
+        gbc.gridy+=1;
+        totalDataBox.add(new JLabel(getTotal()), gbc);
+        totalDataBox.setPreferredSize(new Dimension(0, 50));
+        totalDataBox.setBackground(null);
+        totalDataBox.revalidate();
+        totalDataBox.repaint();
+    }
+
+    private void setTransactionButton() {
+        JButton button = new JButton("New Transaction");
+        button.addActionListener(e -> new WindowNewTransaction(this));
+        button.setBackground(null);
+        transactionButton.setPreferredSize(new Dimension(0, 35));
+        transactionButton.setBackground(new Color(0x999999));
+        transactionButton.add(button);
     }
 
 }

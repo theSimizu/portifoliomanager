@@ -10,11 +10,12 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public abstract class Wallet {
+public abstract class Wallet implements Comparable<Wallet>{
 	private final int id;
 	private final String name;
 	protected ArrayList<Transaction> transactions;
 	protected ArrayList<? extends Asset> assets;
+	private double total;
 //	protected static final DataBase db = DataBase.db;
 
 	protected abstract void setAssets();
@@ -25,21 +26,31 @@ public abstract class Wallet {
 		this.setAssets();
 	}
 
-	public String getTotal() {
-		DecimalFormat val = new DecimalFormat("0.00");
+	public void setTotal() {
 		double total = 0;
 		for (Asset asset : assets) { total += asset.getCurrentTotalConvertedValue(); }
-		return val.format(total);
+		this.total = total;
+	}
+
+	public void setPair(String pair) {
+		for (Asset asset : assets) asset.setPair(pair);
+	}
+
+	public String getTotalString() {
+		DecimalFormat val = new DecimalFormat("0.00");
+		this.setTotal();
+		return val.format(this.total).replace(",", ".");
+	}
+
+	public double getTotal() {
+//		this.setTotal();
+		return total;
 	}
 
 	public void createTransaction(Asset coin, Asset pair, boolean buy, LocalDateTime datetime){
 		if (coin instanceof CryptoAsset) Transaction.createTransaction((CryptoAsset) coin, pair, buy, datetime, this.id);
 		else if (coin instanceof FiatAsset) Transaction.createTransaction((FiatAsset) coin, pair, buy, datetime, this.id);
 	}
-
-//	public void createTransaction(FiatAsset coin, Asset pair, boolean buy, LocalDateTime datetime){
-//		Transaction.createTransaction(coin, pair, buy, datetime, this.id);
-//	}
 
 	protected void loadTransactions(String table) {
 		this.transactions = DataBase.getTransactions(this.id, table);
@@ -50,6 +61,12 @@ public abstract class Wallet {
 	}
 
 	public ArrayList<? extends Asset> getAssets() {
-		return this.assets;
+		setAssets();
+		return assets;
+	}
+
+	@Override
+	public int compareTo(Wallet wallet) {
+		return (int)(100*(wallet.getTotal() - this.getTotal()));
 	}
 }

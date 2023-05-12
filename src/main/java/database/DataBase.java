@@ -22,7 +22,7 @@ public class DataBase {
 
 	public static void startDatabase() {
 		try {
-			connection = DriverManager.getConnection("jdbc:sqlite:portfolios.db");
+			connection = DriverManager.getConnection("jdbc:sqlite:resources/portfolios.db");
 			createTables();
 		} catch (SQLException e) {
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
