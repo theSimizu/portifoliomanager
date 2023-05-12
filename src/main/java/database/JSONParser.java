@@ -7,14 +7,16 @@ import java.io.*;
 
 public class JSONParser {
 
-    public static String getJSONContent(Reader reader) throws IOException {
+    public static String getJSONContent(Reader reader) {
         StringBuilder content = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        String inputLine;
-        while ((inputLine = bufferedReader.readLine()) != null) {
-            content.append(inputLine);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String inputLine;
+            while ((inputLine = bufferedReader.readLine()) != null) content.append(inputLine);
+            bufferedReader.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        bufferedReader.close();
         return content.toString();
     }
 
@@ -23,8 +25,17 @@ public class JSONParser {
         try {
             String content = getJSONContent(new FileReader(fileName));
             jsonArray = new JSONArray(content);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        return jsonArray;
+    }
+
+    public static JSONArray getJSONArrayFileData(File file) {
+        JSONArray jsonArray;
+        try {
+            String content = getJSONContent(new FileReader(file));
+            jsonArray = new JSONArray(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,11 +47,28 @@ public class JSONParser {
         try {
             String content = getJSONContent(new FileReader(fileName));
             json = new JSONObject(content);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return json;
+    }
+
+    public static JSONObject getJSONFileData(InputStream file) {
+        JSONObject json;
+        String content = getJSONContent(new BufferedReader(new InputStreamReader(file)));
+        json = new JSONObject(content);
+        return json;
+    }
+
+    public static JSONObject getJSONFileData(File file) {
+        JSONObject json;
+        String content = null;
+        try {
+            content = getJSONContent(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        json = new JSONObject(content);
         return json;
     }
 
